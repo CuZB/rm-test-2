@@ -114,6 +114,9 @@
   <ItemGroup>
     <ClCompile Include="源.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="circle-pre_img.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
