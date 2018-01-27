@@ -9,16 +9,7 @@
 using namespace std;
 using namespace cv;
 const double PI = atan(1.)*4.;
-void fillHole(Mat srcBw, Mat& dstBw)
-{
-	Size m_Size = srcBw.size();
-	Mat Temp = Mat::zeros(m_Size.height + 2, m_Size.width + 2, srcBw.type());//延展图像  
-	srcBw.copyTo(Temp(Range(1, m_Size.height + 1), Range(1, m_Size.width + 1)));
-	cv::floodFill(Temp, Point(0, 0), Scalar(255));//填充区域  
-	Mat cutImg;//裁剪延展的图像  
-	Temp(Range(1, m_Size.height + 1), Range(1, m_Size.width + 1)).copyTo(cutImg);
-	dstBw = srcBw | (~cutImg);
-}
+
 
 void RGB2HSV(double red, double green, double blue, double& hue, double& saturation,
 	double& intensity)
@@ -139,4 +130,32 @@ bool isCircle(const Mat srcBw, Mat& mytemp)//（待改进）
 		}
 	}
 	return iscircle;
+}
+
+bool isSomeColor(Mat colorRoi) {
+	bool isSomeColor = false;
+	int width = colorRoi.cols;   //图像宽度
+	int height = colorRoi.rows;
+	double B = 0.0, G = 0.0, R = 0.0, H = 0.0, S = 0.0, V = 0.0;
+	Mat Mat_rgb = Mat::zeros(colorRoi.size(), CV_8UC1);
+	Mat Mat_rgb_copy;//一个暂存单元
+	int x, y, px, py; //循环
+	for (y = 0; y<height; y++)
+	{
+		for (x = 0; x<width; x++)
+		{
+			// 获取BGR值
+			B = colorRoi.at<Vec3b>(y, x)[0];
+			G = colorRoi.at<Vec3b>(y, x)[1];
+			R = colorRoi.at<Vec3b>(y, x)[2];
+			RGB2HSV(R, G, B, H, S, V);
+			//红色：337-360 改颜色
+			if ((H >= 337 && H <= 360 || H >= 0 && H <= 10) && S >= 12 && S <= 100 && V > 20 && V < 99)
+			{
+				Mat_rgb.at<uchar>(y, x) = 255;  //R  
+				isSomeColor = true;
+			}
+		}
+	}
+	return isSomeColor;
 }
